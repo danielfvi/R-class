@@ -425,9 +425,9 @@ $N_{j,t} = N_{j,t-1} + gN_{j,t-1}(1 - \frac{N_{j,t-1}}{K}) - f_jN_{j,t-1} - E_j 
   
   Where:
   
-$E_{j} = 2dN_{j,t-1}$  
+$E_{j} = dN_{j,t-1}$  
 
-$I_j = dN_{j-1,t-1} + dN_{j+1,t-1}$
+$I_j = \frac{d}{2}*N_{j-1,t-1} + \frac{d}{2}N_{j+1,t-1}$
 
   
   Where $d$ is the dispersal rate. Also, lets assume reflecting boundaries: no fish disperse out of the system. That is, there is no leftward dispersal out of patch 1 and no rightward dispersal out of patch L. Therefore, the equations for boundary patches (1 and $L$) will be different.

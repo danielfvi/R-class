@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Vectorizing
-Vectorizing when we use vector operations to perform simulations, instead of populating a matrix. This makes the simulation much faster, which is important when you are running a sesitivity analysis over a complicated model. For this we use vector operations from session 1. Lets review some important vector operations and vectorize our simple population growth model over many growth rates:
+Vectorizing is when we use vector operations to perform simulations, instead of populating a matrix. This makes the simulation much faster, which is important when you are running a sensitivity analysis over a complicated model. For this we use vector operations from session 1. Lets review some important vector operations and vectorize our simple population growth model over many growth rates:
 
 ```{r}
 #Create a vector  of a sequence from 1 to 5
@@ -40,15 +40,7 @@ z #This will do the following: 1/6, 2/7....
 z= x + y
 z #This will do the following: 1+6, 2+7....
 
-
-#When vectors have different sizes, r will repeat values of the smallest vector and the resulting vector will have the same size as the largest vector. For example:
-x=1:5
-w=6:12
-k = x + w
-k
-#Notice that it worked well for 1:5. However, for elements 6 and 7 it summed with the first two elements of x (k[5:7] =  c(11+1, 12+2)). Even though r gives you a warning, it does the calculations anyway.
-
-#Another important vector operation is to multiply a vector by one value. THis operation multiplies all elements of the vector by one value.
+#Another important vector operation is to multiply a vector by one value. This operation multiplies all elements of the vector by one value.
 z= x*2
 z #This will do the following: 1*2, 2*2, 3*2....
 ```
@@ -85,7 +77,7 @@ for(n in 2:t){
 
 ```
 
-Note that we cannot do the same graph as we did in session 1 because we only have a vector of the resulting pop size in year t. To do that we would have to create a matrix using the rbind function or construct a plot inside the loop. For example:
+Note that we cannot graph population size over time as we did in session 1 because we only have a vector of the resulting pop size in year t. To do that we would have to create a matrix using the rbind function or construct a plot inside the loop. For example:
 ```{r}
 #First we create a vector to store the parameter values (in this case the growth rate)
 growth = seq(1.1, 2, by=0.1)
@@ -102,7 +94,7 @@ pop[]=10
 #Create a vector to store our population sizes
 out = pop
 
-#Create a plot for our population sizes in every time setp. Note that we need to create a vector os the same size of pop repeating the corresponding time step
+#Create a plot for our population sizes in every time setp. Note that we need to create a vector with the same length of pop
 plot(rep(1, length(pop)), pop, type="l", ylab="population size", xlab="Years", ylim=c(0, 11700000000), xlim=c(1, t))
 
 #Loop over the number of years (rows) and growth rates (columns)
@@ -117,7 +109,7 @@ for(n in 2:t){
   #Now we can add points to our plot for every time step
   points(rep(n, length(pop)), pop)
   
-  #Alternatively, we can construct a matrix to store our population sizes from our vector out. This will add a line to out every time step.
+  #Alternatively, we can construct a matrix to store our population sizes from our vector out. This will add a line to out every time step of our loop.
   out = rbind(out, pop)
 }
 
@@ -126,9 +118,9 @@ matplot(out, type="l", ylab="Population size", xlab="Years")
 
 
 #Writing your own functions
-Functions are critical to modeling in R. By turning your model code (like the population model we did in session 1) into a function, it allows you to easily modify and test parameters, perform optimization and make your programming more efficient and clean. Like every other function in R, each function you create is an independent little program, performing a few related tasks and returning the results. This makes complex problems easier to program, and makes it easier to see the logical flow of a large program. The basic syntax for creating a function is as follows. 
+Functions are critical to modeling in R. By turning your model code (like the population model we did in session 1) into a function, it allows you to easily modify and test parameters, perform optimization and make your programming more efficient and clean. Like every other function in R, each function you create is an independent little program, performing a few related tasks and returning the results. This makes complex problems easier to program, and makes it easier to see the logical flow of a large program. 
 
-Suppose you want a function mypop that produces our a population growth model. You first need to specify the name of the functions you wish to create (in this case mypop), and then use the function() command to create your function and inside the parentesis we will put the parameters of our model. In cases where you want a specific result (or results) from your function, you need the return() function in the end of your scrip to create mypop. The basic syntax is then:
+Suppose you want a function mypop to simulate a population growth model. You first need to specify the name of the function you wish to create (in this case mypop), and then use the function() command to create your function. Inside the parenthesis you will put the parameters of the model. In cases where you want a specific result (or results) from your function, you need the return() function in the end of your scrip to create mypop. The basic syntax is then:
 
 mypop = function(parameters){  
   commands  
@@ -202,6 +194,7 @@ for(i in 1:length(growth)){
 #In this loop, we first create a variable res to store our population for all growth rates. When i=1 res will be the vector of population size with a groth rate of growth[1] (which in this case is 1.1). Then we will store that vector in gpop. For i=2, res will be the vector of population size with a groth rate of growth[2] (which in this case is 1.2). Then we will bind this new vector with the previous one to form a matrix. This opreation will repeat for all values of growth. The result will be a matrix called g.plot with t rows and g columns.
 matplot(g.pop, type="l", ylab="Population size", xlab="Years")
 ```
+
 Another way of doing the same graph is to use the cbind function. 
 ```{r}
 #First, we need to create a vector of the growth rates we wish to simulate
@@ -262,9 +255,9 @@ Autoloading your functions can be useful when you want to run several functions 
 
 #Exercise 3
 
-Write a function for the MPA model we constructed in exercise 2. For this model, our parameters will be $t$, $K$, $d$, $L$, $g$, $f$ and $MPA$. The parameter $MPA$ will be a value representing the percent in MPA of our model (from 0 to 100). Your should tranform this MPA value into a vector of fishing mortalities, where patches designated as MPA have a value of 0. Set $d=0.2$; $L=100$; $g=0.5$, $K=100$, $t=50$, and initital population of 50 individuals 
+Write a function for the MPA model we constructed in exercise 2. For this model, our parameters will be $t$, $K$, $d$, $L$, $g$, $f$ and $MPA$. The parameter $MPA$ will be a value representing the percent in MPA of our model (from 0 to 100). Your should transform this MPA value into a vector of fishing mortalities, where patches designated as MPA have a value of $f=0$. Set $d=0.2$; $L=100$; $g=0.5$, $K=100$, $t=50$, and initial population of 50 individuals 
 
-**a**) Calculate yield and population sizes for all MPA values (0, 1, 2..., 100). Test MPA efectiveness for fishing mortality values for patches open to fishing of $f=0.3$ and $f=0.6$. 
+**a**) Calculate yield and population sizes for all MPA values (0, 1, 2..., 100). Test MPA effectiveness for fishing mortality values for patches open to fishing of $f=0.3$ and $f=0.6$. 
 
 Plot:  
 1) Total population size (all patches) in year t for all MPA sizes and both fishing mortalities  
@@ -275,7 +268,7 @@ Answer:
 2) What is the optimal MPA size for both fishing mortalities?  
 2) How does the answer from 2) change if $d=0.5$?
 
-**b**) Calculate the optimal MPA size for different mobility values. Set $f=0.6$ for all patches open to fisheries and test values a range of d values (0, 0.1, 0.2...., 1) and MPA sizes (0, 1, 2..., 100). Optimal MPA size is defined as the percent in MPA that gives the maximum yield in year t. 
+**b**) Calculate the optimal MPA size for different mobility values. Set $f=0.6$ for all patches open to fisheries and test a range of $d$ values (0, 0.1, 0.2...., 1) and MPA sizes (0, 1, 2..., 100). Optimal MPA size is defined as the percent in MPA that gives the maximum yield in year t. 
 
 Plot:  
 1) optimal MPA size for different values of d
