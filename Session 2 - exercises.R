@@ -5,12 +5,6 @@
 
 #Exercise 1 
 #a
-#Set your parameters
-g=0.8
-K=100
-f=0.3
-N0 = 50
-t=50
 
 #create a function called mypop
 mypop = function(g, K, f, N0, t){
@@ -36,9 +30,16 @@ return(pop)
 res = mypop(g=0.5, K=100, f=0.3, N0=50, t=50)
 
 #plot the resulting population size
-plot(res, type="l")
+plot(res, type="l", ylab="population Size", xlab="Years")
 
 #b
+#Set your parameters
+g=0.8
+K=100
+f=0.3
+N0 = 50
+t=50
+
 #create a vector of fishing mortalities
 f.sim = seq(0, 1, by=0.1)
 
@@ -55,7 +56,7 @@ for(n in 2:nrow(x)){
     }
 }
 #plot our matrix
-matplot(pop, type="l")
+matplot(pop, type="l", ylab="population Size", xlab="Years")
 
 #Use the mypop function to create the population matrix
 for(n in 1:length(f.sim)){
@@ -63,7 +64,7 @@ for(n in 1:length(f.sim)){
   if(n==1){out=res}else{out = cbind(out, res)}
 }
 
-matplot(out, type="l")
+matplot(out, type="l", ylab="population Size", xlab="Years")
 
 ###Lets vectorize!
 mypop.vectorize = function(g, K, N0, t){
@@ -110,7 +111,7 @@ mypop.vectorize = function(g, K, N0, t){
 res = mypop.vectorize(g=0.5, K=100, N0=50, t=50)
 
 #plot our output matrix
-matplot(res, type="l")
+matplot(res, type="l", ylab="population Size", xlab="Years")
 
 #Exercise 2
 
