@@ -48,7 +48,7 @@ z #This will do the following: 1*2, 2*2, 3*2....
 Now instead of using a nested loop, lets vectorize our example from Session 1
 ```{r}
 #First we create a vector to store the parameter values (in this case the growth rate)
-growth = seq(1.1, 2, by=0.1)
+growth = seq(0.1, 1, by=0.1)
 
 #Let simulate over 20 years 
 t=20
@@ -60,7 +60,7 @@ pop = rep(0, length(growth))
 pop[]=10
 
 #Create a plot to demonstrate our population szies for each growth rate. We first need to plot our initial population sizes by each growth rate. Note that we need to know up front what will be the maximum population size for the years we simulate. This is easier when you set a carrying capacity for our population, which we can then set the ylim to K.
-plot(pop~growth, type="l", ylab="population size", xlab="growth rate", ylim=c(0, 11700000000))
+plot(pop~growth, type="l", ylab="population size", xlab="growth rate", ylim=c(0, 6000000))
 
 #Loop over the number of years we wish to simulate (t)
 for(n in 2:t){
@@ -80,7 +80,7 @@ for(n in 2:t){
 Note that we cannot graph population size over time as we did in session 1 because we only have a vector of the resulting pop size in year t. To do that we would have to create a matrix using the rbind function or construct a plot inside the loop. For example:
 ```{r}
 #First we create a vector to store the parameter values (in this case the growth rate)
-growth = seq(1.1, 2, by=0.1)
+growth = seq(0.1, 1, by=0.1)
 
 #Let simulate over 20 years 
 t=20
@@ -95,7 +95,7 @@ pop[]=10
 out = pop
 
 #Create a plot for our population sizes in every time setp. Note that we need to create a vector with the same length of pop
-plot(rep(1, length(pop)), pop, type="l", ylab="population size", xlab="Years", ylim=c(0, 11700000000), xlim=c(1, t))
+plot(rep(1, length(pop)), pop, type="l", ylab="population size", xlab="Years", ylim=c(0, 6000000), xlim=c(1, t))
 
 #Loop over the number of years (rows) and growth rates (columns)
 for(n in 2:t){
