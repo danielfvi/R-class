@@ -2,13 +2,13 @@
 title: "Session 1 - Exercise 1"
 author: "Daniel Viana"
 date: "January 30, 2018"
-output: 
+output:
+  word_document:
+    toc: yes
+  pdf_document: default
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document: default
-  word_document:
-    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -51,21 +51,21 @@ plot(pop, type="l", ylab="Population", xlab="Years")
 plot(yield, type="l", ylab="Yield", xlab="Years")
 ```
 
-##Questions
+##Questions  
 1)
 ```{r}
 sum(yield)
 #613.2043
 ```
 
-2)
+2)  
 ```{r}
 pop[50]
 yield[50]
 #Population size in year 50 is 40, and yield in year 50 is 12
 ```
 
-#b
+#b  
 ```{r}
 #Define variables 
 g = 0.5

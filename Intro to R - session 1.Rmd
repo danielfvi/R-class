@@ -3,12 +3,12 @@ title: "Intro to modeling in R - Session 1"
 author: "Daniel Viana"
 date: "January 25, 2018"
 output:
+  word_document:
+    toc: yes
+  pdf_document: default
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document: default
-  word_document:
-    toc: yes
 ---
 
 ```{r setup, include=FALSE}

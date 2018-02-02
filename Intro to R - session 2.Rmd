@@ -3,12 +3,12 @@ title: "Intro to R modeling - Session 2"
 author: "Daniel Viana"
 date: "February 1, 2018"
 output:
+  word_document:
+    toc: yes
+  pdf_document: default
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document: default
-  word_document:
-    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -213,7 +213,7 @@ However, using the cbind function might be hard to keep track of the actual para
 
 ```{r}
 #First lets redifine our function to return pop[50], g and t
-mypop.last = function(g, t, N0){
+mypop.eq = function(g, t, N0){
   
 #Create a vector (pop) of zeros and size t 
 pop = rep(0, t)
@@ -236,7 +236,7 @@ growth = seq(1.1, 2, by=0.1)
 
 #now we run a for loop through all our population growth rates
 for(i in 1:length(growth)){
-  res = mypop.last(g = growth[i], t=10, N0=10)
+  res = mypop.eq(g = growth[i], t=10, N0=10)
   if(i==1){g.pop2 = res}else(g.pop2=rbind(g.pop2, res)) 
 }
 #name the columns
@@ -244,6 +244,37 @@ colnames(g.pop2)=c("pop", "g", "t", "N0")
 #In this case, in the first time step we are creating a vector of pop[50], g and t for growth[1]. In the second time step (i=2), we will create a matrix where the second row will be the values for growth[2]. The loop will keep adding rows to this matrix for all growth values. This can be a useful method when you are running a sensitivity analysis on a number of parameters.  
 
 plot(g.pop2[,"pop"]~g.pop2[,"g"], ylab="Population size", xlab="Growth rate")
+```
+
+#Manipulate function
+
+This function can be very useful to explore parameter values. As you change your parameters the graph updates automatically.
+```{r}
+require(manipulate)  #need this package
+
+#Lets rewrite our function to have the plot inside it. For this we dont need to return any value, just the actual plot. 
+mypop = function(g, t, N0){
+  
+#Create a vector (pop) of zeros and size t 
+pop = rep(0, t)
+
+#Set the initial population size
+pop[1]=N0
+
+#calculate population size at times 2 through 10, increasing by g every year
+for(n in 2:length(pop)){
+  pop[n]=g*pop[n-1]
+}
+#Plot our population size
+plot(pop, type="l", ylab="Population Size", xlab="Years")
+}
+#
+manipulate(mypop(g, t, N0), 
+           g = slider(min=0,max=2,initial=1.2,step=0.1), 
+           t = slider(min=1,max=100,initial=10,step=1),
+           N0 = slider(min=1,max=50,initial=10,step=1),
+           add.curve = checkbox(TRUE, "Add curve"),
+           add.lines = checkbox(TRUE, "Add lines"))
 ```
 
 #Autoloading functions at startup
