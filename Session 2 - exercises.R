@@ -1,3 +1,8 @@
+#################################
+#Intro to modeling in R workshop
+#Session 2 - 2/1/18
+#################################
+
 #Exercise 1 
 #a
 #Set your parameters
