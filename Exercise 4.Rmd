@@ -1,0 +1,34 @@
+---
+title: "Exercise 4"
+author: "Daniel Viana"
+date: "February 8, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Exercise 4
+
+Lets use the same MPA model function we constructed for exercise 3. Now lets explore what would be the optimal fishing mortality for different values of growth rate, movement rate and MPA size. Lets keep the standard parameter values we used in exercise 3 ($K=100$, $t=50$, $L=100$, $N0=50$, $d=0.2$). For this exercise, $g$, $f$ and $MPA$ will vary according to the parameters we are testing.
+
+**a**) Find the optimal fishing mortality (fishing mortality that gives you the highest yield) for all MPA sizes (0 to 100). Use $g=0.5$.
+
+Plot:  
+1) Optimal fishing mortality for all MPA sizes  
+2) Yield for all MPA sizes 
+
+**b**) Now lets fix the MPA size to 50% (MPA=50) and find the optimal fishing mortality for each value of growth rate.
+
+Plot:  
+1) Optimal fishing mortality for all values of growth rate (0.1, 0.2...1).
+
+**c**) Now lets find the estimated open access fishing mortality (fishing mortality that will drive the population down to 10% of carrying capacity) for all MPA sizes (0 to 100). Use $g=0.5$.
+
+Plot:  
+1) Open access fishing mortality for all MPA sizes  
+2) Yield for all MPA sizes 
+
