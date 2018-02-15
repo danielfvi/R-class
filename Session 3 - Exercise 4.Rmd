@@ -1,0 +1,192 @@
+---
+title: "Session 4 - Exercise 4"
+author: "Daniel Viana"
+date: "February 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**a**)
+```{r}
+mpa.model = function(f, MPA, growth, K, t, d, L, N0){
+  
+
+  #Create a vector of fishing mortalities for each patch (left/ right)
+  #f.patches=c(rep(0, L-MPA), rep(f, MPA))
+  
+  #Create a vector of fishing mortalities for each patch (middle)
+  f.patches = rep(f, L)
+  if(MPA>0){
+    mpa.begin = round((L-MPA)/2) + 1
+    mpa.end = mpa.begin + MPA - 1
+    f.patches[mpa.begin:mpa.end] = 0
+  }  
+  
+  
+  #Create matrices to store population size and total yield on all patches
+  pop = rep(0, L)
+  total.yield = rep(0, L)
+  
+  #Set initial population size and yield
+  pop[] = N0
+  total.yield[] = pop*f.patches
+  
+  #Run the loop to calculate population size for all patches
+  for(n in 1:t){
+    
+    #Population growth
+    surplus = pop*growth*(1-pop/K)
+    
+    #Fishing mortality
+    fishing = pop*f.patches
+    
+    #Emigration  
+    Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+    
+    #Immigration 
+    Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+    
+    #Update population size
+    pop = pop + surplus - fishing - Emi + Immi 
+    
+    #Calculate total yield
+    total.yield = total.yield + fishing
+    
+  }
+  sum.pop = sum(pop)
+  sum.yield = sum(total.yield)
+  sum.yield.eq = sum(fishing)
+  #return(c(sum.pop, sum.yield, sum.yield.eq, MPA, f, d))
+  return(sum.yield.eq)
+}
+#Lets see if it works
+res = mpa.model.optim(f=0.5, MPA=0,growth=0.5, K=100, t=50, d=0.5, L=100, N0=50)
+res
+
+#Maximize yield
+p0=c(0.25)
+fit = optim(p0, mpa.model, method = c("L-BFGS-B"), lower=0,upper=1, control = list(fnscale = -1), MPA=0, growth=0.5, K=100, t=50, d=0.2, L=100, N0=50)
+fit$par
+
+#Find optimal fishing mortality for different MPA sizes
+MPA.sim = 0:99
+p0=c(0.25)
+for(k in 1:length(MPA.sim)){
+  fit = optim(p0, mpa.model, method = c("L-BFGS-B"), lower=0,upper=1, control = list(fnscale = -1), MPA=MPA.sim[k], growth=0.5,
+              K=100, t=50, d=0.2, L=100, N0=50)
+  if(k==1){out=c(fit$par, fit$value, MPA.sim[k])}else{out=rbind(out, c(fit$par, fit$value, MPA.sim[k]))}
+  
+}
+```
+
+Plots
+
+1)
+```{r}
+plot(out[,3], out[,1], ylab="optimal fishing mortality", xlab="MPA size")
+```
+
+2)
+```{r}
+plot(out[,3], out[,2], ylab="Yield", xlab="MPA size")
+```
+
+**b**)
+
+```{r}
+#Find optimal fishing mortality for values of growth rate
+growth.values = seq(0.1, 1, by=0.1)
+p0=c(0.25)
+for(k in 1:length(growth.values)){
+  fit = optim(p0, mpa.model, method = c("L-BFGS-B"), lower=0,upper=1, control = list(fnscale = -1), MPA=50, growth=growth.values[k], K=100, t=50, d=0.2, L=100, N0=50)
+  if(k==1){out=c(fit$par, growth.values[k])}else{out=rbind(out, c(fit$par, growth.values[k]))}
+}
+
+plot(out[,1]~out[,2], ylab="Optimal fishing mortality", xlab="growth rate")
+```
+
+***c***)
+```{r}
+#Open access
+mpa.model = function(f, MPA, growth, K, t, d, L, N0){
+  
+  
+  #Create a vector of fishing mortalities for each patch (left/ right)
+  #f.patches=c(rep(0, L-MPA), rep(f, MPA))
+  
+  #Create a vector of fishing mortalities for each patch (middle)
+  f.patches = rep(f, L)
+  if(MPA>0){
+    mpa.begin = round((L-MPA)/2) + 1
+    mpa.end = mpa.begin + MPA - 1
+    f.patches[mpa.begin:mpa.end] = 0
+  }  
+  
+  
+  #Create matrices to store population size and total yield on all patches
+  pop = rep(0, L)
+  total.yield = rep(0, L)
+  
+  #Set initial population size and yield
+  pop[] = N0
+  total.yield[] = pop*f.patches
+  
+  #Run the loop to calculate population size for all patches
+  for(n in 1:t){
+    
+    #Population growth
+    surplus = pop*growth*(1-pop/K)
+    
+    #Fishing mortality
+    fishing = pop*f.patches
+    
+    #Emigration  
+    Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+    
+    #Immigration 
+    Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+    
+    #Update population size
+    pop = pop + surplus - fishing - Emi + Immi 
+    
+    #Calculate total yield
+    total.yield = total.yield + fishing
+    
+  }
+  sum.pop = sum(pop)
+  sum.yield = sum(total.yield)
+  sum.yield.eq = sum(fishing)
+  f.MPA = f.patches
+  f.MPA[][f.MPA>0]=1
+  fishingN = pop*f.MPA 
+  OA = abs(sum(fishingN)/(L-MPA)-10)
+  #return(c(sum.pop, sum.yield, sum.yield.eq, MPA, f, d))
+  #return(sum.yield.eq)
+  return(OA)
+}
+#Lets see if it works
+res = mpa.model.optim(f=0.6, MPA=20,growth=0.5, K=100, t=50, d=0.5, L=100, N0=50)
+res
+
+#Optimization for sustainable overharvest
+#Biomass at 10% of K - open acess
+p0=c(0.25)
+fit = optim(p0, mpa.model.optim, method = c("Brent"), lower=0,upper=1, MPA=90, growth=0.5,
+            K=100, t=50, d=0.2, L=100, N0=50)
+fit$par
+
+#Find optimal fishing mortality for different MPA sizes
+MPA.sim = 0:99
+p0=c(0.25)
+for(k in 1:length(MPA.sim)){
+  fit = optim(p0, mpa.model.optim, method = c("Brent"), lower=0,upper=1, MPA=MPA.sim[k], growth=0.5,
+              K=100, t=50, d=0.3, L=100, N0=10)
+  if(k==1){out=c(fit$par, fit$value, MPA.sim[k])}else{out=rbind(out, c(fit$par, fit$value, MPA.sim[k]))}
+  
+}
+plot(out[,3], out[,1], ylab="open access fishing mortality", xlab="MPA size")
+```
+

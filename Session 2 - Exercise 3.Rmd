@@ -1,0 +1,219 @@
+---
+title: "Session 2 - Exercise 3"
+author: "Daniel Viana"
+date: "January 31, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#a
+ 
+```{r}
+#Create our function mpa.model
+mpa.model = function(g, K, t, d, L, f, MPA, N0){
+  
+#Create a vector of fishing mortalities for each patch
+f.patches=c(rep(0, L-MPA), rep(f, MPA))
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size and yield
+pop[] = N0
+total.yield[] = pop*f.patches
+
+#Run the loop to calculate population size for all patches
+for(n in 1:t){
+ 
+  #Population growth
+  growth = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f.patches
+  
+  #Emigration  
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration 
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + growth - fishing - Emi + Immi 
+  
+  #Calculate total yield
+  total.yield = total.yield + fishing
+  
+  }
+sum.pop = sum(pop)
+sum.yield = sum(total.yield)
+sum.yield.eq = sum(fishing)
+return(c(sum.pop, sum.yield, sum.yield.eq, MPA, f, d))
+}
+#Lets see if it works
+res = mpa.model(g=0.5, K=100, t=50, d=0.5, L=100, N0=50, f=0.5, MPA=50)
+res
+```
+
+```{r}
+#Simulate all MPA values and both fishing mortalities
+mpa.sizes = seq(0, 100, by=1)
+f.sim = c(0.3, 0.6)
+
+#Create output matrix
+out = matrix(,,6)
+colnames(out) = c("pop", "total.yield", "eq.yield", "MPA", "f", "d")
+
+#loop over the MPA sizes anf fishing mortalities
+for(n in 1:length(f.sim)){
+  for(i in 1:length(mpa.sizes)){
+  res = mpa.model(g=0.5, K=100, t=50, d=0.1, L=100, N0=50, f=f.sim[n], MPA=mpa.sizes[i])
+  out=rbind(out, res) 
+  }
+}
+```
+
+##Plots
+1)
+```{r}
+plot(out[,"pop"][out[,"f"]==0.6], type="l", ylab="Population Size", xlab="MPA size", col="blue")
+lines(out[,"pop"][out[,"f"]==0.3], type="l", ylab="Population Size", xlab="MPA size", col="red")
+legend("topleft", legend = c("f=0.6", "f=0.3"), col=c("blue", "red"), lwd=2, bty='n')
+```
+
+2)
+```{r}
+plot(out[,"total.yield"][out[,"f"]==0.3], type="l", ylab="Population Size", xlab="MPA size", col="blue")
+lines(out[,"total.yield"][out[,"f"]==0.6], type="l", ylab="Population Size", xlab="MPA size", col="red")
+legend("topright", legend = c("f=0.6", "f=0.3"), col=c("blue", "red"), lwd=2, bty='n')
+```
+
+##Questions
+1)
+```{r}
+#Optimal MPA size for f=0.3
+h=max(out[,"eq.yield"][out[,"f"]==0.3], na.rm=TRUE)
+out[match(h, out[,"eq.yield"]), "MPA"]
+
+#Optimal MPA size for f=0.6
+h=max(out[,"eq.yield"][out[,"f"]==0.6], na.rm=TRUE)
+out[match(h, out[,"eq.yield"]), "MPA"]
+
+#Optimal MPA sie for f=0.3 is 0 and for f=0.6 is 2
+```
+
+#b
+```{r}
+#Simulate all MPA values and dispersal rates
+mpa.sizes = seq(0, 100, by=1)
+d.sim = seq(0, 1, by=0.1)
+
+#Create output matrix
+out = matrix(,,6)
+colnames(out) = c("pop", "total.yield", "eq.yield", "MPA", "f", "d")
+
+#loop over the MPA sizes anf fishing mortalities
+for(n in 1:length(d.sim)){
+  for(i in 1:length(mpa.sizes)){
+  res = mpa.model(g=0.5, K=100, t=50, d=d.sim[n], L=100, N0=50, f=0.6, MPA=mpa.sizes[i])
+  out=rbind(out, res) 
+  }
+}
+```
+
+##Plots
+1)
+```{r}
+#Calculate optimal MPA size for different d values
+#We can use the aggregate function to find max yield values for each d value
+x = aggregate(eq.yield~d, out, max)
+#Now we can merge both datasets
+x = merge(x, out)
+#Now lets plot 
+plot(x[, "d"], x[,"MPA"], type="l", ylab="Optimal MPA size", xlab="Dispersal rate")
+```
+
+#c
+```{r}
+#Create our function mpa.model
+mpa.model = function(g, K, t, d, L, f, MPA, N0){
+  
+#Create a vector of fishing mortalities for each patch
+f.patches = rep(f, L)
+if(MPA>0){
+  mpa.begin = round((L-MPA)/2) + 1
+  mpa.end = mpa.begin + MPA - 1
+  f.patches[mpa.begin:mpa.end] = 0
+}  
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size and yield
+pop[] = N0
+total.yield[] = pop*f.patches
+
+#Run the loop to calculate population size for all patches
+for(n in 1:t){
+ 
+  #Population growth
+  growth = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f.patches
+  
+  #Emigration  
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration 
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + growth - fishing - Emi + Immi 
+  
+  #Calculate total yield
+  total.yield = total.yield + fishing
+  
+  }
+sum.pop = sum(pop)
+sum.yield = sum(total.yield)
+sum.yield.eq = sum(fishing)
+return(c(sum.pop, sum.yield, sum.yield.eq, MPA, f, d))
+}
+#Lets see if it works
+res = mpa.model(g=0.5, K=100, t=50, d=0.5, L=100, N0=50, f=0.5, MPA=50)
+res
+```
+
+##Plots
+1)
+```{r}
+#Simulate all MPA values and dispersal rates
+mpa.sizes = seq(0, 100, by=1)
+d.sim = seq(0, 1, by=0.1)
+
+#Create output matrix
+out = matrix(,,6)
+colnames(out) = c("pop", "total.yield", "eq.yield", "MPA", "f", "d")
+
+#loop over the MPA sizes anf fishing mortalities
+for(n in 1:length(d.sim)){
+  for(i in 1:length(mpa.sizes)){
+  res = mpa.model(g=0.5, K=100, t=50, d=d.sim[n], L=100, N0=50, f=0.6, MPA=mpa.sizes[i])
+  out=rbind(out, res) 
+  }
+}
+
+#Calculate optimal MPA size for different d values
+#We can use the aggregate function to find max yield values for each d value
+x = aggregate(eq.yield~d, out, max)
+#Now we can merge both datasets
+x = merge(x, out)
+#Now lets plot 
+plot(x[, "d"], x[,"MPA"], type="l", ylab="Optimal MPA size", xlab="Dispersal rate")
+```
+

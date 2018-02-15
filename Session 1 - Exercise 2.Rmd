@@ -1,0 +1,407 @@
+---
+title: "Session 1 - Exercise 2"
+author: "Daniel Viana"
+date: "January 30, 2018"
+output:
+  word_document:
+    toc: yes
+  pdf_document: default
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Exercise 2
+
+#a
+```{r}
+#Define variables 
+g = 0.5
+K=100
+t=50
+d=0.1
+L=20
+f1=0.3
+f2=0.6
+#Create a vector of fishing mortalities for each patch
+f=c(rep(f1, L/2), rep(f2, L/2))
+
+#Create matrices to store population size and yield on all patches
+pop = matrix(0, t, L)
+yield = matrix(0, t, L)
+
+#Set initial population size
+pop[1,] = 50
+
+#Run the loop to calculate population size for all patches
+for(n in 2:t){
+  for(j in 1:L){
+    if(j==1){
+      pop[n, j] = pop[n-1,j] + pop[n-1,j]*g*(1-pop[n-1,j]/K) - pop[n-1,j]*f[j] - d/2*pop[n-1,j] + d/2*pop[n-1, j+1]}
+    else{if(j==L){
+      pop[n, j] = pop[n-1,j] + pop[n-1,j]*g*(1-pop[n-1,j]/K) - pop[n-1,j]*f[j] - d/2*pop[n-1,j] + d/2*pop[n-1, j-1]}
+    else{
+      pop[n, j] = pop[n-1,j] + pop[n-1,j]*g*(1-pop[n-1,j]/K) - pop[n-1,j]*f[j] - d*pop[n-1,j] + d/2*pop[n-1, j-1] + d/2*pop[n-1, j+1]
+       }
+    }
+  }
+}
+
+#Run the loop to calculate yield for all patches
+for(n in 1:t){
+  for(j in 1:L){
+      yield[n, j] = pop[n, j]*f[j]
+    }
+}
+```
+
+1)
+```{r}
+matplot(pop, type="l", ylab="Population Size", xlab="Years")
+```
+
+2)
+```{r}
+matplot(yield, type="l", ylab="Yield", xlab="Years")
+```
+
+3)
+```{r}
+#create two vectors to store average pop size for f=0.3 and f=0.6
+ave.06 = rep(0, L/2)
+ave.03 = rep(0, L/2)
+
+#Run a loop to calculate the average pop size
+for(n in 1:L/2){
+  ave.03[n] = mean(pop[n, 1:L/2])
+  ave.06[n] = mean(pop[n, (L/2+1):L])
+}
+
+#form a matrix of both vectors
+x = cbind(ave.03, ave.06)
+
+#Plot
+matplot(x, type="l", ylab="Population Size", xlab="Years")
+```
+
+4)
+```{r}
+#create two vectors to store average pop size for f=0.3 and f=0.6
+ave.06 = rep(0, L/2)
+ave.03 = rep(0, L/2)
+
+#Run a loop to calculate the average pop size
+for(n in 1:L/2){
+  ave.03[n] = mean(yield[n, 1:L/2])
+  ave.06[n] = mean(yield[n, (L/2+1):L])
+}
+
+#form a matrix of both vectors
+x = cbind(ave.03, ave.06)
+
+#Plot
+matplot(x, type="l", ylab="Yield", xlab="Years")
+```
+
+5)
+```{r}
+plot(pop[t,], ylab="Population Size", xlab="Patch")
+```
+
+6)
+```{r}
+plot(yield[t,], ylab="Population Size", xlab="Patch")
+```
+
+7)
+```{r}
+#Create a vector to store total yield in all years
+total.yield = rep(0, L)
+
+#Run a loop over all patches
+for(j in 1:L){
+  total.yield[j] = sum(yield[,j])
+}
+
+#Plot
+plot(total.yield, ylab="Total Yield", xlab="Patch")
+```
+
+8)
+```{r}
+#Create a vector to store total yield in all years
+total.pop = rep(0, L)
+
+#Run a loop over all patches
+for(j in 1:L){
+  total.pop[j] = sum(pop[,j])
+}
+
+#Plot
+plot(total.pop, ylab="Total Population Size", xlab="Patch")
+```
+
+#b
+```{r}
+#Define variables 
+g = 0.5
+K=100
+t=50
+d=0.1
+L=20
+f1=0.3
+f2=0.6
+#Create a vector of fishing mortalities for each patch
+f=c(rep(f1, L/2), rep(f2, L/2))
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size
+pop[] = 50
+total.yield[] = pop*f
+
+#Run the loop to calculate population size for all patches
+for(n in 1:(t-1)){
+ 
+  #Population growth
+  surplus = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f
+  
+  #Emigration - we need to create a vector with different equations for the edge patches. For these patches     there is only emigration to the patch on the right (for patch 1) and to the patch on the left (for patch L).   All other patches have emigration to the right and to the left.
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration - we have to sum the immigration from the left patches and the immigration from the right        patches. Note that there is no immigration from the left patches to patch L and no immigration from the       right patches to patch 1.
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + surplus - fishing - Emi + Immi 
+  
+  #Calculate total yield. Note that here we are summing the total yield from the previous year with current yield.
+  total.yield = total.yield + fishing
+  
+}
+
+```
+
+
+#c
+```{r}
+#Define variables 
+g = 0.5
+K=100
+t=50
+d=0.1
+L=100
+f1=0.5
+f2=0
+MPA = 50
+#Create a vector of fishing mortalities for each patch
+f=c(rep(f1, MPA), rep(f2, L-MPA))
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size
+pop[] = 50
+total.yield[] = pop*f
+
+#Run the loop to calculate population size for all patches
+for(n in 1:(t-1)){
+ 
+  #Population growth
+  surplus = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f
+  
+  #Emigration  
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration 
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + surplus - fishing - Emi + Immi 
+  
+  #Calculate total yield
+  total.yield = total.yield + fishing
+  
+}
+
+```
+
+1)
+```{r}
+plot(pop, ylab="Population Size", xlab="Patch")
+```
+
+2)
+```{r}
+plot(fishing, ylab="Yield", xlab="Patch")
+```
+
+3)
+```{r}
+plot(total.yield, ylab="Yield", xlab="Patch")
+```
+
+4)
+```{r}
+#First calculate for MPA of 10%
+#Define variables 
+g = 0.5
+K=100
+t=50
+d=0.1
+L=100
+f1=0.5
+f2=0
+MPA = 10
+#Create a vector of fishing mortalities for each patch
+f=c(rep(f1, L-MPA), rep(f2, MPA))
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size
+pop[] = 50
+total.yield[] = pop*f
+
+#Run the loop to calculate population size for all patches
+for(n in 1:(t-1)){
+ 
+  #Population growth
+  surplus = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f
+  
+  #Emigration
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration - we have to sum the immigration from the left patches and the immigration from the right patches
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + surplus - fishing - Emi + Immi 
+  
+  #Calculate total yield
+  total.yield = total.yield + fishing
+  
+}
+total.yield.10 = total.yield
+pop.10 = pop
+
+#Second calculate for MPA of 50%
+#Define variables 
+g = 0.5
+K=100
+t=50
+d=0.1
+L=100
+f1=0.5
+f2=0
+MPA = 50
+#Create a vector of fishing mortalities for each patch
+f=c(rep(f1, L-MPA), rep(f2, MPA))
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size
+pop[] = 50
+total.yield[] = pop*f
+
+#Run the loop to calculate population size for all patches
+for(n in 1:(t-1)){
+ 
+  #Population growth
+  surplus = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f
+  
+  #Emigration
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration - we have to sum the immigration from the left patches and the immigration from the right patches
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + surplus - fishing - Emi + Immi 
+  
+  #Calculate total yield
+  total.yield = total.yield + fishing
+  
+}
+total.yield.50 = total.yield
+pop.50 = pop
+
+#Lastly calculate for MPA of 80%
+#Define variables 
+g = 0.5
+K=100
+t=50
+d=0.1
+L=100
+f1=0.5
+f2=0
+MPA = 80
+#Create a vector of fishing mortalities for each patch
+f=c(rep(f1, L-MPA), rep(f2, MPA))
+
+#Create matrices to store population size and total yield on all patches
+pop = rep(0, L)
+total.yield = rep(0, L)
+
+#Set initial population size
+pop[] = 50
+total.yield[] = pop*f
+
+#Run the loop to calculate population size for all patches
+for(n in 1:(t-1)){
+ 
+  #Population growth
+  surplus = pop*g*(1-pop/K)
+  
+  #Fishing mortality
+  fishing = pop*f
+  
+  #Emigration
+  Emi = c(pop[1]*d/2, pop[2:(L-1)]*d, pop[L]*d/2)
+  
+  #Immigration - we have to sum the immigration from the left patches and the immigration from the right patches
+  Immi = c(pop[2:L]*d/2, 0) + c(0, pop[1:(L-1)]*d/2)
+  
+  #Update population size
+  pop = pop + surplus - fishing - Emi + Immi 
+  
+  #Calculate total yield
+  total.yield = total.yield + fishing
+  
+}
+total.yield.80 = total.yield
+pop.80 = pop
+
+#Now plot total yield for different reserve sizes
+mpa.plot = c(sum(total.yield.10), sum(total.yield.50), sum(total.yield.80))
+plot(mpa.plot~c(10, 50, 80), ylab="Total Yield", xlab="MPA size")
+```
+
+5)
+```{r}
+mpa.plot = c(sum(pop.10), sum(pop.50), sum(pop.80))
+plot(mpa.plot~c(10, 50, 80), ylab="Population Size", xlab="MPA size")
+```
+
