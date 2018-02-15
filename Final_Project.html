@@ -11,6 +11,7 @@
 
 <meta name="author" content="Daniel Viana" />
 
+<meta name="date" content="2018-02-15" />
 
 <title>MPA project</title>
 
@@ -120,13 +121,11 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">MPA project</h1>
 <h4 class="author"><em>Daniel Viana</em></h4>
-<h4 class="date"><em>February 8, 2018</em></h4>
+<h4 class="date"><em>February 15, 2018</em></h4>
 
 </div>
 
 
-<div id="other-important-additions-to-our-model" class="section level1">
-<h1>Other important additions to our model</h1>
 <p><strong>a</strong>) Using the MPA model we constructed last session, simulate MPA effectiveness for a well managed fishery and an open access fishery (assuming that open access fishery drives the population down to 20% of the carrying capacity). What is the optimal MPA size that maximizes yield for open access and well managed fisheries?</p>
 <p><strong>b</strong>) How does the answer from <strong>a</strong> change if we place the MPAs in random patches? How does the design of MPAs influence optimal MPA size?</p>
 <p><strong>c</strong>) Now lets allocate effort based on the abundance in each patch. Although we can estimate one single open access fishing mortality for all patches open to fishing, this does not account for the fishing the in edges effect. In reality, fishing effort will likely be concentrated in the edges of the reserve, where where we expect higher abundance of fish. Lets try to include this component into the model using the equations acording to Hilborn et al 2006 (<a href="http://www.nrcresearchpress.com/doi/abs/10.1139/f05-243#.WnykHa6nGpo" class="uri">http://www.nrcresearchpress.com/doi/abs/10.1139/f05-243#.WnykHa6nGpo</a>). Using this method, fishing effort be concentrated where abundance is high. You will have to calculate the total effort for all patches and distribute that effort according to the abundance of fish. Check out the paper and try to include this component in our model (Equations 6 and 7). The basic equations for the effort in areas open to fishing are:</p>
@@ -140,7 +139,6 @@ $(document).ready(function () {
 <p>Where <span class="math inline">\(Y\)</span> is the sum of yield from all patches open to fishing and <span class="math inline">\(p\)</span> is the price per fish. How does dicount rate affect the optimal MPA size? Test the effect of different gorwth rates and initial population sizes in the optimal MPA size.</p>
 <p><strong>d</strong>) What is the net benefit of MPAs?</p>
 <p><strong>e</strong>) What other questions can we ask our model?</p>
-</div>
 
 
 
