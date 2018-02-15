@@ -1,15 +1,13 @@
 ---
 title: "MPA project"
 author: "Daniel Viana"
-date: "February 8, 2018"
+date: "February 15, 2018"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-#Other important additions to our model
 
 **a**) Using the MPA model we constructed last session, simulate MPA effectiveness for a well managed fishery and an open access fishery (assuming that open access fishery drives the population down to 20% of the carrying capacity). What is the optimal MPA size that maximizes yield for open access and well managed fisheries?
 
