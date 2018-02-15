@@ -1,0 +1,38 @@
+---
+title: "MPA project"
+author: "Daniel Viana"
+date: "February 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Other important additions to our model
+
+**a**) Using the MPA model we constructed last session, simulate MPA effectiveness for a well managed fishery and an open access fishery (assuming that open access fishery drives the population down to 20% of the carrying capacity). What is the optimal MPA size that maximizes yield for open access and well managed fisheries?
+
+**b**) How does the answer from **a** change if we place the MPAs in random patches? How does the design of MPAs influence optimal MPA size?
+
+**c**) Now lets allocate effort based on the abundance in each patch. Although we can estimate one single open access fishing mortality for all patches open to fishing, this does not account for the fishing the in edges effect. In reality, fishing effort will likely be concentrated in the edges of the reserve, where where we expect higher abundance of fish. Lets try to include this component into the model using the equations acording to Hilborn et al 2006 (http://www.nrcresearchpress.com/doi/abs/10.1139/f05-243#.WnykHa6nGpo). Using this method, fishing effort be concentrated where abundance is high. You will have to calculate the total effort for all patches and distribute that effort according to the abundance of fish. Check out the paper and try to include this component in our model (Equations 6 and 7). The basic equations for the effort in areas open to fishing are:
+
+$Prop_{j,t} = exp[-(1-\frac{N_{j,t}}{N^*})]$
+
+Where $Prop_j$ is the relative fish abundance in each patch, $N_{j,t}$ is the abundance at patch $j$, and $N^*$ is the maximum abundance outside of the reserve. 
+
+$f_j,t = 1- exp(-q\frac{Prop_{j,t}}{\sum_{j=1}^j{Prop_{j,t}}})$
+
+Where $q$ is the total effort in all patches open to fishing. 
+
+Now lets assume that we have an open access fishery before the MPA was implemented. Find the total effort that would drive the population down to 20% of the carrying capacity with no MPA. Now maintain this value constant and simulate MPA implementation. What is the optimal MPA size that maximizes yield?
+
+**c**) Now lets construct a bioeconomic model. Lets add revenue and a discount rate to calculate the revenue Net Present Value (NPV). This is important to account for timming of potential MPA benefits. Assume the price is 10 ($p=10$) and a discount rate of 0.05 ($\delta = 0.05$). The basic equation is:
+
+$NPV = \sum_{t=1}^tY_{t}p(\frac{1}{1+\delta})^t$
+
+Where $Y$ is the sum of yield from all patches open to fishing and $p$ is the price per fish. How does dicount rate affect the optimal MPA size? Test the effect of different gorwth rates and initial population sizes in the optimal MPA size.  
+
+**d**) What is the net benefit of MPAs?
+
+**e**) What other questions can we ask our model?
