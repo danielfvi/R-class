@@ -3,12 +3,12 @@ title: "Intro to R modeling - Session 2"
 author: "Daniel Viana"
 date: "February 1, 2018"
 output:
-  word_document:
-    toc: yes
-  pdf_document: default
   html_document:
     toc: yes
     toc_float: yes
+  pdf_document: default
+  word_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -250,7 +250,7 @@ plot(g.pop2[,"pop"]~g.pop2[,"g"], ylab="Population size", xlab="Growth rate")
 
 This function can be very useful to explore parameter values. As you change your parameters the graph updates automatically.
 ```{r}
-require(manipulate)  #need this package
+#require(manipulate)  #need this package
 
 #Lets rewrite our function to have the plot inside it. For this we dont need to return any value, just the actual plot. 
 mypop = function(g, t, N0){
@@ -269,12 +269,13 @@ for(n in 2:length(pop)){
 plot(pop, type="l", ylab="Population Size", xlab="Years")
 }
 #
-manipulate(mypop(g, t, N0), 
-           g = slider(min=0,max=2,initial=1.2,step=0.1), 
-           t = slider(min=1,max=100,initial=10,step=1),
-           N0 = slider(min=1,max=50,initial=10,step=1),
-           add.curve = checkbox(TRUE, "Add curve"),
-           add.lines = checkbox(TRUE, "Add lines"))
+#You need to run this function on R console. It doenst seem to work in R markdown.
+#manipulate(mypop(g, t, N0), 
+#           g = slider(min=0,max=2,initial=1.2,step=0.1), 
+#           t = slider(min=1,max=100,initial=10,step=1),
+#           N0 = slider(min=1,max=50,initial=10,step=1),
+#           add.curve = checkbox(TRUE, "Add curve"),
+#           add.lines = checkbox(TRUE, "Add lines"))
 ```
 
 #Autoloading functions at startup
